@@ -957,7 +957,7 @@ func (api *API) TraceCallMany(ctx context.Context, txs []ethapi.TransactionArgs,
 	// Intended to trace only on the latest block, assuming that it's pending block
 	vmctx.BlockNumber.Add(vmctx.BlockNumber, big.NewInt(1))
 	// vmctx.Time.Add(vmctx.Time, big.NewInt(3)) // @note: previously time was BigInt
-	vmctx.Time += 3
+	vmctx.Time += 12
 	vmctx.GetHash = customGetHashFn(block.Header(), api.chainContext(ctx)) // @review: experiment (disable etc.) with this
 
 	var results = make([]interface{}, len(txs))
