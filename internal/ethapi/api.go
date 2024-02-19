@@ -2451,7 +2451,7 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 		return nil, err
 	}
 	blockNumber := big.NewInt(int64(args.BlockNumber))
-	timestamp := parent.Time + 1
+	timestamp := parent.Time + 12
 	if args.Timestamp != nil {
 		timestamp = *args.Timestamp
 	}
