@@ -2544,11 +2544,12 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 			}*/
 
 		} else {
-			dst := make([]byte, hex.EncodedLen(len(result.Return())))
+			// alternate implementation, works same
+			/*dst := make([]byte, hex.EncodedLen(len(result.Return())))
 			hex.Encode(dst, result.Return())
-			jsonResult["value"] = "0x" + string(dst)
+			jsonResult["value"] = "0x" + string(dst)*/
 
-			jsonResult["data"] = hexutil.Bytes(result.Return()) // outputs same result
+			jsonResult["output"] = hexutil.Bytes(result.Return())
 		}
 		results = append(results, jsonResult)
 	}
