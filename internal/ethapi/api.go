@@ -2333,7 +2333,7 @@ func (s *BundleAPI) CallBundle(ctx context.Context, args CallBundleArgs) (map[st
 	coinbaseBalanceBefore := state.GetBalance(coinbase)
 
 	bundleHash := sha3.NewLegacyKeccak256()
-	signer := types.MakeSigner(s.b.ChainConfig(), blockNumber, 0) // @review: cancun needs timestamp, will be on march 13 2024
+	signer := types.MakeSigner(s.b.ChainConfig(), blockNumber, 0 /*header.Time*/) // @review: cancun needs timestamp, will be on march 13 2024, also try with header time
 	var totalGasUsed uint64
 	gasFees := new(big.Int)
 	for i, tx := range txs {
@@ -2526,6 +2526,29 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 		// Append result
 		jsonResult := map[string]interface{}{
 			"gasUsed": result.UsedGas,
+		}
+		if result.Err != nil {
+			jsonResult["error"] = result.Err.Error()
+			revert := result.Revert()
+			if len(revert) > 0 {
+				jsonResult["revert"] = string(revert)
+			}
+
+			// alternate more readable revert
+			/*if len(result.Revert()) > 0 {
+				revertErr := newRevertError(result)
+				data, _ := json.Marshal(&revertErr)
+				var result map[string]interface{}
+				json.Unmarshal(data, &result)
+				return result
+			}*/
+
+		} else {
+			dst := make([]byte, hex.EncodedLen(len(result.Return())))
+			hex.Encode(dst, result.Return())
+			jsonResult["value"] = "0x" + string(dst)
+
+			jsonResult["data"] = hexutil.Bytes(result.Return()) // experimental, compare with `value`
 		}
 		results = append(results, jsonResult)
 	}
