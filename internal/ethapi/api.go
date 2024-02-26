@@ -2548,7 +2548,7 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 			hex.Encode(dst, result.Return())
 			jsonResult["value"] = "0x" + string(dst)
 
-			jsonResult["data"] = hexutil.Bytes(result.Return()) // experimental, compare with `value`
+			jsonResult["data"] = hexutil.Bytes(result.Return()) // outputs same result
 		}
 		results = append(results, jsonResult)
 	}
