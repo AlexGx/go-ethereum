@@ -967,8 +967,16 @@ func (api *API) TraceCallMany(ctx context.Context, txs []ethapi.TransactionArgs,
 	var results = make([]interface{}, len(txs))
 	for idx, args := range txs {
 		// Execute the trace
-		msg := args.ToMessage(block.BaseFee())
-		tx := args.ToTransaction()
+		if err := args.CallDefaults(api.backend.RPCGasCap(), vmctx.BaseFee, api.backend.ChainConfig().ChainID); err != nil {
+			return nil, err
+		}
+		var (
+			msg = args.ToMessage(vmctx.BaseFee)
+			tx  = args.ToTransaction()
+		)
+
+		/*msg := args.ToMessage(block.BaseFee())
+		tx := args.ToTransaction() */
 		// Trace the transaction and return
 		res, err := api.traceTx(ctx, tx, msg, new(Context), vmctx, statedb, traceConfig)
 		if err != nil {
