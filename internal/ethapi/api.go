@@ -2421,7 +2421,7 @@ type EstimateGasBundleArgs struct {
 	Timeout                *int64                `json:"timeout"`
 }
 
-func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundleArgs) (map[string]interface{}, error) {
+func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundleArgs) ([]interface{}, error) {
 	if len(args.Txs) == 0 {
 		return nil, errors.New("bundle missing txs")
 	}
@@ -2474,10 +2474,10 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 	}
 
 	// RPC Call gas cap
-	globalGasCap := s.b.RPCGasCap()
+	// globalGasCap := s.b.RPCGasCap()
 
 	// Results
-	results := []map[string]interface{}{}
+	results := []interface{}{}
 
 	// Copy the original db so we don't modify it
 	statedb := state.Copy()
@@ -2505,10 +2505,7 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 		statedb.SetTxContext(randomHash, i)
 
 		// Convert tx args to msg to apply state transition
-		msg, err := txArgs.ToMessage(globalGasCap, header.BaseFee)
-		if err != nil {
-			return nil, err
-		}
+		msg := txArgs.ToMessage(header.BaseFee)
 
 		// Prepare the hashes
 		txContext := core.NewEVMTxContext(msg)
@@ -2534,7 +2531,7 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 			jsonResult["error"] = result.Err.Error()
 			revert := result.Revert()
 			if len(revert) > 0 {
-				jsonResult["revert"] = string(revert)
+				jsonResult["revertReason"] = string(revert)
 			}
 
 			// alternate more readable revert
@@ -2558,8 +2555,5 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 	}
 
 	// Return results
-	ret := map[string]interface{}{}
-	ret["results"] = results
-
-	return ret, nil
+	return results, nil
 }
