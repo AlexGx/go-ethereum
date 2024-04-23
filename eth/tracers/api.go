@@ -974,9 +974,6 @@ func (api *API) TraceCallMany(ctx context.Context, txs []ethapi.TransactionArgs,
 			msg = args.ToMessage(vmctx.BaseFee)
 			tx  = args.ToTransaction()
 		)
-
-		/*msg := args.ToMessage(block.BaseFee())
-		tx := args.ToTransaction() */
 		// Trace the transaction and return
 		res, err := api.traceTx(ctx, tx, msg, new(Context), vmctx, statedb, traceConfig)
 		if err != nil {
