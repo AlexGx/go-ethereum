@@ -2504,17 +2504,9 @@ func (s *BundleAPI) EstimateGasBundle(ctx context.Context, args EstimateGasBundl
 		// New random hash since its a call
 		statedb.SetTxContext(randomHash, i)
 
-		/*if err := txArgs.CallDefaults(api.backend.RPCGasCap(), vmctx.BaseFee, api.backend.ChainConfig().ChainID); err != nil {
-			return nil, err
-		}*/
-		/*var (
-			msg = args.ToMessage(vmctx.BaseFee)
-			tx  = args.ToTransaction()
-		)*/
 		if err := txArgs.CallDefaults(s.b.RPCGasCap(), header.BaseFee, s.b.ChainConfig().ChainID); err != nil {
 			return nil, err
 		}
-		// call := args.ToMessage(header.BaseFee)
 
 		// Convert tx args to msg to apply state transition
 		msg := txArgs.ToMessage(header.BaseFee)
